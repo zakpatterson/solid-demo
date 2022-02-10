@@ -1,11 +1,4 @@
-import {
-  Component,
-  createContext,
-  createEffect,
-  createSignal,
-  PropsWithChildren,
-  useContext
-} from 'solid-js'
+import { Component, createContext, createEffect, createSignal, useContext } from 'solid-js'
 import { createStore, DeepReadonly } from 'solid-js/store'
 import { Site, SiteOp } from './data'
 
@@ -36,12 +29,11 @@ const initialOp: SiteOp = {
 
 const StateContext = createContext<[DeepReadonly<Site>, SiteOp]>([initialSiteState, initialOp])
 
-export const StateContextProvider: Component = (props: PropsWithChildren<{ initial?: Site }>) => {
-  const { initial = initialSiteState, children } = props
+export const StateContextProvider: Component<{ initial?: Site }> = (props) => {
   const [doLog, setLog] = createSignal(false)
 
   const log = () => setLog(true)
-  const [store, setStore] = createStore<Site>(initial)
+  const [store, setStore] = createStore<Site>(props.initial ?? initialSiteState)
 
   createEffect(() => {
     if (doLog()) {
@@ -94,7 +86,7 @@ export const StateContextProvider: Component = (props: PropsWithChildren<{ initi
     increment: wrap3(increment, 'Add resident')
   }
 
-  return <StateContext.Provider value={[store, siteOp]}>{children}</StateContext.Provider>
+  return <StateContext.Provider value={[store, siteOp]}>{props.children}</StateContext.Provider>
 }
 
 export const useStateContext = () => useContext(StateContext)
